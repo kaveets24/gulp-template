@@ -12,35 +12,51 @@ const del = require("del");
 // Browsersync
 const browserSync = require("browser-sync").create();
 
-function compileSass(cb) {
-  cb();
-  return (
-    src("src/sass/index.scss")
-      .pipe(sass())
-      // Prevent Gulp from crashing on error.
-      .on("error", function(err) {
-        console.log(err.toString());
+// Development Server Tasks
 
-        this.emit("end");
-      })
-      .pipe(dest("src/sass"))
-      .pipe(browserSync.stream())
-  );
+class Dev {
+  
+  static compileSass() {
+    // cb();
+    return (
+      src("src/sass/index.scss")
+        .pipe(sass())
+        // Prevent Gulp from crashing on error.
+        .on("error", function(err) {
+          console.log(err.toString());
+  
+          this.emit("end");
+        })
+        .pipe(dest("src/sass"))
+        .pipe(browserSync.stream())
+    );
+  }
+  static watchFiles() {
+    // Start Browsersync
+    browserSync.init({
+      server: {
+        baseDir: "src"
+      }
+    });
+  
+    // Watch for SCSS and Sass file changes.
+    watch("src/**/*.+(sass|scss)", Dev.compileSass);
+    // Watch for All other file changes, excluding sass/scss/css in the src/ directory and reload browser.
+    watch(["src/**/*", "!src/**/*.+(sass|scss|css)"]).on(
+      "change",
+      browserSync.reload
+    );
+  }
+
 }
 
-function minifyJs() {
-  return (
-    src("src/*.html")
-      .pipe(useref())
-      // Minifies only if it's a JavaScript file.
-      .pipe(gulpIf("*.js", uglify()))
-      .pipe(dest("dist"))
-  );
-}
-// Copy Index.css into dist folder
-function css() {
-  return src("src/sass/*.css")
-  .pipe(dest("dist/sass"))
+
+
+
+// Build Tasks
+
+function fonts() {
+  return src("src/fonts/**/*").pipe(dest("dist/fonts"));
 }
 
 function images() {
@@ -52,41 +68,36 @@ function images() {
   );
 }
 
-function fonts() {
-  return src("src/fonts/**/*").pipe(dest("dist/fonts"));
-}
-
-function watchFiles() {
-  // Start Browsersync
-  browserSync.init({
-    server: {
-      baseDir: "src"
-    }
-  });
-
-  // Watch for SCSS and Sass file changes.
-  watch("src/**/*.+(sass|scss)", compileSass);
-  // Watch for All other file changes, excluding sass/scss/css in the src/ directory and reload browser.
-  watch(["src/**/*", "!src/**/*.+(sass|scss|css)"]).on(
-    "change",
-    browserSync.reload
+function javascript() {
+  return (
+    src("src/*.html")
+      .pipe(useref())
+      // Minifies only if it's a JavaScript file.
+      .pipe(gulpIf("*.js", uglify()))
+      .pipe(dest("dist"))
   );
 }
+function css() {
+  return src("src/sass/*.css").pipe(dest("dist/sass"));
+}
 
-// Clean out the dist folder.
-function cleanDist(cb) {
-  cb();
+function svg() {
+  return src("src/svg/*").pipe(dest("dist/svg"));
+}
+
+function clean() {
   return del.sync("dist");
 }
 
 exports.build = series(
-  cleanDist,
-  compileSass,
-  minifyJs,
-  css,
-  images,
+  clean,
+  Dev.compileSass,
   fonts,
+  images,
+  javascript,
+  css,
+  svg
 );
-exports.clean = cleanDist;
-exports.watch = watchFiles;
-exports.default = watchFiles;
+exports.clean = clean;
+exports.watch = Dev.watchFiles;
+exports.default = Dev.watchFiles;
