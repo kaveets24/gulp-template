@@ -9,6 +9,7 @@ $ npm install
 ```
 
 ### Start the development server.
+- Start a server and automatically open a browser to localhost:3000
 ```
 $ gulp
 ```
