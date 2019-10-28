@@ -15,16 +15,15 @@ const browserSync = require("browser-sync").create();
 // Development Server Tasks
 
 class Dev {
-  
-  static compileSass() {
-    // cb();
+  static compileSass(cb) {
+    cb();
     return (
       src("src/sass/index.scss")
         .pipe(sass())
         // Prevent Gulp from crashing on error.
         .on("error", function(err) {
           console.log(err.toString());
-  
+
           this.emit("end");
         })
         .pipe(dest("src/sass"))
@@ -38,20 +37,16 @@ class Dev {
         baseDir: "src"
       }
     });
-  
+
     // Watch for SCSS and Sass file changes.
-    watch("src/**/*.+(sass|scss)", Dev.compileSass);
+    watch("src/**/*.+(sass|scss)", this.compileSass);
     // Watch for All other file changes, excluding sass/scss/css in the src/ directory and reload browser.
     watch(["src/**/*", "!src/**/*.+(sass|scss|css)"]).on(
       "change",
       browserSync.reload
     );
   }
-
 }
-
-
-
 
 // Build Tasks
 
@@ -85,9 +80,13 @@ function svg() {
   return src("src/svg/*").pipe(dest("dist/svg"));
 }
 
-function clean() {
+function clean(cb) {
+  cb();
   return del.sync("dist");
 }
+
+
+// Exports
 
 exports.build = series(
   clean,
