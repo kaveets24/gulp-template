@@ -1,0 +1,32 @@
+// Utils
+@import "./utils/styleguide.scss";
+
+// Components
+@import "header";
+@import "main";
+@import "hero";
+@import "blogposts";
+@import "footer";
+
+// CSS Reset
+@import "reset.css";
+
+*,
+li,
+a,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+div {
+  box-sizing: border-box;
+  font-family: $fontMain;
+  color: $fontWhite;
+}
+
+html {
+  height: auto;
+}

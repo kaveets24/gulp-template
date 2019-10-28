@@ -1,0 +1,100 @@
+// Colors
+$fontBlack: hsl(0, 0%, 10%);
+$fontWhite: #ffffff;
+
+$gradientColor1: #2c5364;
+$gradientColor2: #203a43;
+$gradientColor3: #0f2027;
+$gradient: linear-gradient(
+  180deg,
+  $gradientColor1 0%,
+  #203a43 50%,
+  $gradientColor3 100%
+);
+$secondaryOpacity: hsla(0, 0%, 75%, 0.7);
+$logoColor: #BABABA;
+
+// Font Sizes
+$fontXS: 14px;
+$fontSmall: 16px;
+$fontMedium: 18px;
+$fontLarge: 20px;
+$fontXL: 24px;
+$fontXXL: 36px;
+$fontXXXL: 72px;
+$fontXXXXL: 96px;
+$fontHeading: 24px;
+
+// Font Styles
+@font-face {
+  font-family: "Roboto";
+  src: url("../fonts/Roboto/Roboto-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Roboto Bold";
+  src: url("../fonts/Roboto/Roboto-Bold.ttf");
+}
+
+@font-face {
+  font-family: "Roboto Thin Italic";
+  src: ulr("../fonts/Roboto/Roboto-LightItalic.ttf")
+}
+$fontMain: Roboto, sans-serif;
+$fontBold: "Roboto Bold", sans-serif;
+$fontThinItalic: "Roboto Thin Italic", sans-serif;
+
+
+// Breakpoints
+$mobileBreakpointMin: 320px;
+$mobileBreakpointMax: 767px;
+$tabletBreakpointMin: 768px;
+$tabletBreakpointMax: 1023px;
+$desktopBreakpointMin: 1024px;
+
+// Misc. Styles
+$formPadding: 10px;
+$layoutPadding: 128px;
+$layoutMargin: 128px;
+$mobileMargin: 45px;
+$textShadow: 0 2px 15px hsla(0, 0%, 0%, 0.2);
+$border: 1px solid $fontWhite;
+$headerHeight: 72px;
+
+// Keyframes
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideFromBottom {
+  from {
+    transform: translate(0, 2000px);
+  }
+  to {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// Animations
+$hoverTransitionDuration: 0.4s;
+@mixin fadeIn {
+  animation: fadeIn 1s;
+}
+@mixin slideFromBottom {
+  animation: slideFromBottom 1s;
+}
