@@ -39,7 +39,7 @@ class Dev {
     });
 
     // Watch for SCSS and Sass file changes.
-    watch("src/**/*.+(sass|scss)", this.compileSass);
+    watch("src/**/*.+(sass|scss)", Dev.compileSass);
     // Watch for All other file changes, excluding sass/scss/css in the src/ directory and reload browser.
     watch(["src/**/*", "!src/**/*.+(sass|scss|css)"]).on(
       "change",
