@@ -14,8 +14,9 @@ $ gulp
 ```
 
 ### Build your files.
-- The following command will build the assets inside of src/ and ouputs to dist/
-```
-$ gulp build
+
+``` javascript
+
+$ gulp build // build the assets inside of src/ and ouput to dist/
 ```
 
