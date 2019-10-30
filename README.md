@@ -9,7 +9,7 @@ $ npm install
 ```
 
 ### Start the development server.
-- Start the dev server and automatically open `localhost:3000` using your default browser. 
+- Start the dev server to automatically open `localhost:3000` using your default browser. 
 - The server will listen for file changes inside of `src/` and refresh your browser whenever you save a file.
 ```
 $ gulp
