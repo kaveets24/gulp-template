@@ -1,8 +1,8 @@
 // Utils
-@import "./utils/styleguide.scss";
+@import 'styleguide';
 
-// Components
-@import "./components/main";
+// Modules
+@import "modules/main";
 
 
 // CSS Reset
@@ -21,7 +21,7 @@ h6,
 div {
   box-sizing: border-box;
   font-family: $fontMain;
-  color: $fontWhite;
+  color: $fontBlack;
 }
 
 html {
