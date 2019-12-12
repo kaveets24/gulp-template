@@ -1,102 +1,134 @@
-const { series, src, dest, watch } = require("gulp");
-
 // Gulp Plugins
-const sass = require("gulp-sass");
-const useref = require("gulp-useref");
-const uglify = require("gulp-uglify");
-const gulpIf = require("gulp-if");
-const imagemin = require("gulp-imagemin");
-const cache = require("gulp-cache");
-const del = require("del");
+const { src, series, dest, watch, parallel } = require("gulp");
+const {
+  sass,
+  concat,
+  sassGlob,
+  sourcemaps,
+  uglify,
+  babel,
+  autoprefixer,
+  cleanCss,
+  clean,
+  cache,
+  imagemin
+} = require("gulp-load-plugins")();
 
-// Browsersync
+// BrowserSync
 const browserSync = require("browser-sync").create();
 
-// Development Server Tasks
+const exec = require("child_process").exec;
 
-class Dev {
-  static compileSass(cb) {
-    cb();
-    return (
-      src("src/sass/index.scss")
-        .pipe(sass())
-        // Prevent Gulp from crashing on error.
-        .on("error", function(err) {
-          console.log(err.toString());
+// Pathname Global Variables
 
-          this.emit("end");
-        })
-        .pipe(dest("src/sass"))
-        .pipe(browserSync.stream())
+const globs = {
+  sass: "src/**/*.scss",
+  js: "src/js/**/*.js",
+  json: "src/**/*.json",
+  html: "src/**/*.html",
+  md: "src/**/*.md",
+  images: "src/images/**/*.+(png|jpeg|jpg|svg)",
+  fonts: "src/fonts/**/*"
+};
+
+const srcPaths = {
+  root: "src/",
+  sass: "src/sass/main.scss",
+  sassRoot: "src/sass/",
+  js: "src/js/main.js",
+};
+
+const buildPaths = {
+  root: "build/",
+  css: "build/css/",
+  js: "build/js/",
+  images: "build/images/",
+  fonts: "build/fonts/"
+};
+
+
+
+function compileJs() {
+  return src(globs.js)
+    .pipe(
+      babel({
+        presets: ["@babel/env"],
+        plugins: [["@babel/plugin-proposal-class-properties", { loose: true }]]
+      })
+    )
+    .pipe(
+      concat("main.js")
+        .pipe(uglify())
+        .pipe(dest(buildPaths.js))
     );
-  }
-  static watchFiles() {
-    // Start Browsersync
-    browserSync.init({
-      server: {
-        baseDir: "src"
-      }
-    });
+}
 
-    // Watch for SCSS and Sass file changes.
-    watch("src/**/*.+(sass|scss)", Dev.compileSass);
-    // Watch for All other file changes, excluding sass/scss/css in the src/ directory and reload browser.
-    watch(["src/**/*", "!src/**/*.+(sass|scss|css)"]).on(
+// CSS
+function compileSass(cb) {
+  cb();
+  return src([srcPaths.sass])
+    .pipe(sassGlob())
+    .pipe(sourcemaps.init())
+    .pipe(sass({ outputStyle: "compressed" }).on("error", sass.logError))
+    .pipe(autoprefixer("last 4 versions"))
+    .pipe(concat("main.css"))
+    .pipe(sourcemaps.write())
+    .pipe(dest(buildPaths.css));
+}
+
+function images() {
+  return src(globs.images)
+    .pipe(cache(imagemin()))
+    .pipe(dest(buildPaths.images));
+}
+function fonts() {
+  return src(globs.fonts).pipe(dest(buildPaths.fonts));
+}
+
+function watchFiles() {
+  const files = Object.values(globs);
+  return watch(files, series(parallel(compileSass, compileJs)));
+}
+
+// Clean /build
+function cleanBuildDir() {
+  return src(buildPaths.root, { read: false, allowEmpty: true }).pipe(
+    clean({ force: true })
+  );
+}
+
+class BrowserSync {
+
+  // Initialize BrowserSync for WordPress instead of for the styleguide.
+  static init() {
+    browserSync.init({
+      serve: buildPaths.root
+    });
+  }
+
+  static watch() {
+    const files = Object.values(globs);
+    return watch(files, parallel(compileSass, compileJs)).on(
       "change",
       browserSync.reload
     );
   }
 }
 
-// Build Tasks
+// Tasks
 
-function fonts() {
-  return src("src/fonts/**/*").pipe(dest("dist/fonts"));
-}
-
-function images() {
-  return (
-    src("src/images/*.png")
-      // Cache images that run through imagemin.
-      .pipe(cache(imagemin()))
-      .pipe(dest("dist/images"))
-  );
-}
-
-function javascript() {
-  return (
-    src("src/*.html")
-      .pipe(useref())
-      // Minifies only if it's a JavaScript file.
-      .pipe(gulpIf("*.js", uglify()))
-      .pipe(dest("dist"))
-  );
-}
-function css() {
-  return src("src/sass/*.css").pipe(dest("dist/sass"));
-}
-
-function svg() {
-  return src("src/svg/*").pipe(dest("dist/svg"));
-}
-
-function clean(cb) {
-  cb();
-  return del.sync("dist");
-}
-
-
-// Exports
-
-exports.build = series(
-  clean,
-  Dev.compileSass,
-  fonts,
-  images,
-  javascript,
-  css,
-  svg
+// gulp
+exports.default = series(
+  parallel(compileSass, compileJs, images, fonts),
+  parallel(BrowserSync.init, BrowserSync.watch)
 );
-exports.clean = clean;
-exports.watch = Dev.watchFiles;
-exports.default = Dev.watchFiles;
+// gulp build
+exports.build = series(
+  cleanBuildDir,
+  parallel(compileSass, compileJs, images, fonts)
+);
+// gulp watch
+exports.watch = watchFiles;
+
+// gulp clean
+exports.clean = cleanBuildDir;
