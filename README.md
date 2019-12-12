@@ -16,7 +16,7 @@ $ gulp
 ```
 
 ### Build your files.
--  Build the assets inside of `src/` and ouput to `dist/`
+-  Build the assets inside of `src/` and ouput to `build/`
 
 ``` javascript
 $ gulp build
