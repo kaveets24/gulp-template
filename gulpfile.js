@@ -17,9 +17,7 @@ const {
 // BrowserSync
 const browserSync = require("browser-sync").create();
 
-const exec = require("child_process").exec;
-
-// Pathname Global Variables
+// Pathname Global Variable
 
 const globs = {
   sass: "src/**/*.scss",
@@ -33,20 +31,19 @@ const globs = {
 
 const srcPaths = {
   root: "src/",
+  html: "src/index.html",
   sass: "src/sass/main.scss",
   sassRoot: "src/sass/",
-  js: "src/js/main.js",
+  js: "src/js/main.js"
 };
 
 const buildPaths = {
   root: "build/",
   css: "build/css/",
-  js: "build/js/",
+  fonts: "build/fonts/",
   images: "build/images/",
-  fonts: "build/fonts/"
+  js: "build/js/"
 };
-
-
 
 function compileJs() {
   return src(globs.js)
@@ -76,6 +73,10 @@ function compileSass(cb) {
     .pipe(dest(buildPaths.css));
 }
 
+function html() {
+  return src(srcPaths.html).pipe(dest(buildPaths.root));
+}
+
 function images() {
   return src(globs.images)
     .pipe(cache(imagemin()))
@@ -98,11 +99,12 @@ function cleanBuildDir() {
 }
 
 class BrowserSync {
-
   // Initialize BrowserSync for WordPress instead of for the styleguide.
   static init() {
     browserSync.init({
-      serve: buildPaths.root
+      server: {
+        baseDir: buildPaths.root
+      }
     });
   }
 
@@ -119,13 +121,13 @@ class BrowserSync {
 
 // gulp
 exports.default = series(
-  parallel(compileSass, compileJs, images, fonts),
+  parallel(compileSass, html, compileJs, images, fonts),
   parallel(BrowserSync.init, BrowserSync.watch)
 );
 // gulp build
 exports.build = series(
   cleanBuildDir,
-  parallel(compileSass, compileJs, images, fonts)
+  parallel(compileSass, html, compileJs, images, fonts)
 );
 // gulp watch
 exports.watch = watchFiles;

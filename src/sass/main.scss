@@ -1,12 +1,7 @@
-// Utils
-@import 'styleguide';
+// Base
+@import 'base/reset';
+@import 'base/styleguide';
 
-// Modules
-@import "modules/main";
-
-
-// CSS Reset
-@import "reset.css";
 
 *,
 li,
@@ -22,8 +17,4 @@ div {
   box-sizing: border-box;
   font-family: $fontMain;
   color: $fontBlack;
-}
-
-html {
-  height: auto;
 }
