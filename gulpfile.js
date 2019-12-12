@@ -110,7 +110,7 @@ class BrowserSync {
 
   static watch() {
     const files = Object.values(globs);
-    return watch(files, parallel(compileSass, compileJs)).on(
+    return watch(files, parallel(html, compileSass, compileJs)).on(
       "change",
       browserSync.reload
     );
