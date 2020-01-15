@@ -1,7 +1,6 @@
 // Base
-@import 'base/reset';
-@import 'base/styleguide';
-
+@import "base/reset";
+@import "base/styleguide";
 
 *,
 li,
@@ -17,4 +16,77 @@ div {
   box-sizing: border-box;
   font-family: $fontMain;
   color: $fontBlack;
+}
+
+.header {
+  height: 90px;
+  display: flex;
+  padding: 0 50px;
+
+  .left {
+    display: inline-flex;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: seagreen;
+    height: 100%;
+    width: 50%;
+
+    .logo, img {
+      max-width: 250px;
+      max-height: 90px;
+      height: auto;
+    }
+  }
+
+  .navigation {
+    flex: 1 0 auto;
+    background-color: navajowhite;
+    display: none;
+    
+
+    @media screen and (min-width: 1024px) {
+      display: initial;
+    }
+
+    ul {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+
+      li {
+        padding: 0 1em;
+        border-right: 1px solid black;
+        height: 50px;
+        line-height: 50px;
+
+        &:last-of-type {
+          border-right: none;
+        }
+      }
+    }
+  }
+
+  .right {
+    display: inline-flex;
+    justify-content: flex-end;
+    align-items: center;
+    background-color: steelblue;
+    height: 100%;
+    width: 50%;
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 146px;
+      height: 40px;
+    }
+
+    .search {
+      width: 50px;
+      margin-left: 2em;
+    }
+  }
 }
